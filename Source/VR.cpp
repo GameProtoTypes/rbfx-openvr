@@ -86,17 +86,16 @@ namespace Urho3D {
 		{
 			Matrix4 leftEyePos = ConvertHmdMatrix34_tToMatrix4(m_pHMD->GetEyeToHeadTransform(vr::Eye_Left));
 			Matrix4 rightEyePos = ConvertHmdMatrix34_tToMatrix4(m_pHMD->GetEyeToHeadTransform(vr::Eye_Right));
+			
 			leftCamera_->GetNode()->SetTransform(Matrix3x4(leftEyePos));
 			rightCamera_->GetNode()->SetTransform(Matrix3x4(rightEyePos));
 
+			leftCamera_->SetProjection((ConvertHmdMatrix44_tToMatrix4(m_pHMD->GetProjectionMatrix(vr::Eye_Left, 0.1f, 900.f))*-1.0f));
+			rightCamera_->SetProjection((ConvertHmdMatrix44_tToMatrix4(m_pHMD->GetProjectionMatrix(vr::Eye_Right, 0.1f, 900.f))*-1.0f));
+			
+			leftCamera_->GetNode()->SetRotation(Quaternion(0, 0, 180));
+			rightCamera_->GetNode()->SetRotation(Quaternion(0, 0, 180));
 
-			//hackiness because we can't get the correct projection and eyetohead transform
-			/*leftCamera_->GetNode()->SetRotation(Quaternion(0, -4, 0));
-			rightCamera_->GetNode()->SetRotation(Quaternion(0, 4, 0));
-
-			leftCamera_->SetFov(112);
-			rightCamera_->SetFov(112);*/
-			//end hackiness
 		}
 	}
 
@@ -118,10 +117,18 @@ namespace Urho3D {
 			rightHandNode_->SetTransform(Matrix3x4(GetHandTransform(true)));
 			Matrix4 leftEyePos = ConvertHmdMatrix34_tToMatrix4(m_pHMD->GetEyeToHeadTransform(vr::Eye_Left));
 			Matrix4 rightEyePos = ConvertHmdMatrix34_tToMatrix4(m_pHMD->GetEyeToHeadTransform(vr::Eye_Right));
-			Matrix4 leftProjection = ConvertHmdMatrix44_tToMatrix4(m_pHMD->GetProjectionMatrix(vr::Eye_Left, 0.1f, 30.f));
-			Matrix4 rightProjection = ConvertHmdMatrix44_tToMatrix4(m_pHMD->GetProjectionMatrix(vr::Eye_Right, 0.1f, 30.f));
-			//leftCamera_->SetProjection(ConvertHmdMatrix44_tToMatrix4(m_pHMD->GetProjectionMatrix(vr::Eye_Left, 0.1f, 900)) * leftEyePos * GetHeadTransform());
-			//rightCamera_->SetProjection(ConvertHmdMatrix44_tToMatrix4(m_pHMD->GetProjectionMatrix(vr::Eye_Right, 0.1f, 900)) * rightEyePos * GetHeadTransform());
+			Matrix4 leftProjection = ConvertHmdMatrix44_tToMatrix4(m_pHMD->GetProjectionMatrix(vr::Eye_Left, 0.1f, 900.f));
+			Matrix4 rightProjection = ConvertHmdMatrix44_tToMatrix4(m_pHMD->GetProjectionMatrix(vr::Eye_Right, 0.1f, 900.f));
+			
+			//leftCamera_->SetProjection(ConvertHmdMatrix44_tToMatrix4(m_pHMD->GetProjectionMatrix(vr::Eye_Left, 0.1f, 900)));
+			//rightCamera_->SetProjection(ConvertHmdMatrix44_tToMatrix4(m_pHMD->GetProjectionMatrix(vr::Eye_Right, 0.1f, 900)));
+
+
+
+			leftCamera_->GetNode()->SetTransform(Matrix3x4(leftEyePos));
+			rightCamera_->GetNode()->SetTransform(Matrix3x4(rightEyePos));
+			leftCamera_->GetNode()->SetRotation(Quaternion(0, 0, 180));
+			rightCamera_->GetNode()->SetRotation(Quaternion(0, 0, 180));
 		}
 	}
 
