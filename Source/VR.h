@@ -32,7 +32,7 @@ public:
 	static void RegisterObject(Context* context);
 
 	// Starts the VR subsystem
-	virtual void InitializeVR(Node* referenceNode);
+	virtual bool InitializeVR(Node* referenceNode);
 
 	// Handle update per visual frame
 	virtual void HandleUpdate(StringHash eventType, VariantMap& eventData);

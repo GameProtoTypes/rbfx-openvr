@@ -39,7 +39,7 @@ namespace Urho3D {
 
 	}
 
-	void VR::InitializeVR(Node* referenceNode)
+	bool VR::InitializeVR(Node* referenceNode)
 	{
 		vr::EVRInitError eError = vr::VRInitError_None;
 		m_pHMD = vr::VR_Init(&eError, vr::VRApplication_Scene);
@@ -47,49 +47,50 @@ namespace Urho3D {
 		{
 			m_pHMD = NULL;
 			URHO3D_LOGERROR(vr::VR_GetVRInitErrorAsEnglishDescription(eError));
-			return;
+			return false;
 		}
 		if (!vr::VRCompositor())
 		{
 			m_pHMD = NULL;
 			URHO3D_LOGERROR("Compositor initialization failed. See log file for details");
-			return;
+			return false;
 		}
-		if (m_pHMD)
-		{
 
-			SetReferenceNode(referenceNode);
+		if (!m_pHMD)
+			return false;
 
-			Node* leftCameraNode_ = headNode_->CreateChild("LeftCamera");
-			leftCamera_ = leftCameraNode_->CreateComponent<Camera>();
-			leftCamera_->SetFarClip(900.0f);
-			Node* rightCameraNode_ = headNode_->CreateChild("RightCamera");
-			rightCamera_ = rightCameraNode_->CreateComponent<Camera>();
-			rightCamera_->SetFarClip(900.0f);
 
-			uint32_t m_nRenderWidth;
-			uint32_t m_nRenderHeight;
-			m_pHMD->GetRecommendedRenderTargetSize(&m_nRenderWidth, &m_nRenderHeight);
-			//the second rendertexture to have SetSize() called will have shadows...
-			leftRenderTexture = new Texture2D(context_);
-			leftRenderTexture->SetSize(m_nRenderWidth, m_nRenderHeight, Graphics::GetRGBFormat(), TEXTURE_RENDERTARGET);
-			leftRenderTexture->SetFilterMode(FILTER_BILINEAR);
-			RenderSurface* leftSurface = leftRenderTexture->GetRenderSurface();
-			leftSurface->SetUpdateMode(SURFACE_UPDATEALWAYS);
-			SharedPtr<Viewport> leftrttViewport(new Viewport(context_, leftCamera_->GetScene(), leftCamera_));
-			leftSurface->SetViewport(0, leftrttViewport);
-			rightRenderTexture = new Texture2D(context_);
-			rightRenderTexture->SetSize(m_nRenderWidth, m_nRenderHeight, Graphics::GetRGBFormat(), TEXTURE_RENDERTARGET);
-			rightRenderTexture->SetFilterMode(FILTER_BILINEAR);
-			RenderSurface* rightSurface = rightRenderTexture->GetRenderSurface();
-			rightSurface->SetUpdateMode(SURFACE_UPDATEALWAYS);
-			SharedPtr<Viewport> rightrttViewport(new Viewport(context_, rightCamera_->GetScene(), rightCamera_));
-			rightSurface->SetViewport(0, rightrttViewport);
-		}
-		if (m_pHMD)
-		{
-			UpdateNodes();
-		}
+		SetReferenceNode(referenceNode);
+
+		Node* leftCameraNode_ = headNode_->CreateChild("LeftCamera");
+		leftCamera_ = leftCameraNode_->CreateComponent<Camera>();
+		leftCamera_->SetFarClip(900.0f);
+		Node* rightCameraNode_ = headNode_->CreateChild("RightCamera");
+		rightCamera_ = rightCameraNode_->CreateComponent<Camera>();
+		rightCamera_->SetFarClip(900.0f);
+
+		uint32_t m_nRenderWidth;
+		uint32_t m_nRenderHeight;
+		m_pHMD->GetRecommendedRenderTargetSize(&m_nRenderWidth, &m_nRenderHeight);
+		//the second rendertexture to have SetSize() called will have shadows...
+		leftRenderTexture = new Texture2D(context_);
+		leftRenderTexture->SetSize(m_nRenderWidth, m_nRenderHeight, Graphics::GetRGBFormat(), TEXTURE_RENDERTARGET);
+		leftRenderTexture->SetFilterMode(FILTER_BILINEAR);
+		RenderSurface* leftSurface = leftRenderTexture->GetRenderSurface();
+		leftSurface->SetUpdateMode(SURFACE_UPDATEALWAYS);
+		SharedPtr<Viewport> leftrttViewport(new Viewport(context_, leftCamera_->GetScene(), leftCamera_));
+		leftSurface->SetViewport(0, leftrttViewport);
+		rightRenderTexture = new Texture2D(context_);
+		rightRenderTexture->SetSize(m_nRenderWidth, m_nRenderHeight, Graphics::GetRGBFormat(), TEXTURE_RENDERTARGET);
+		rightRenderTexture->SetFilterMode(FILTER_BILINEAR);
+		RenderSurface* rightSurface = rightRenderTexture->GetRenderSurface();
+		rightSurface->SetUpdateMode(SURFACE_UPDATEALWAYS);
+		SharedPtr<Viewport> rightrttViewport(new Viewport(context_, rightCamera_->GetScene(), rightCamera_));
+		rightSurface->SetViewport(0, rightrttViewport);
+
+		UpdateNodes();
+
+		return true;
 	}
 
 	void VR::HandleUpdate(StringHash eventType, VariantMap& eventData)
