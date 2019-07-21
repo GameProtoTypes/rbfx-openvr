@@ -36,9 +36,10 @@ namespace Urho3D {
 
 	void VR::RegisterObject(Context* context)
 	{
+
 	}
 
-	void VR::InitializeVR()
+	void VR::InitializeVR(Node* referenceNode)
 	{
 		vr::EVRInitError eError = vr::VRInitError_None;
 		m_pHMD = vr::VR_Init(&eError, vr::VRApplication_Scene);
@@ -56,6 +57,9 @@ namespace Urho3D {
 		}
 		if (m_pHMD)
 		{
+
+			SetReferenceNode(referenceNode);
+
 			Node* leftCameraNode_ = headNode_->CreateChild("LeftCamera");
 			leftCamera_ = leftCameraNode_->CreateComponent<Camera>();
 			leftCamera_->SetFarClip(900.0f);
@@ -139,23 +143,23 @@ namespace Urho3D {
 	{
 	}
 
-	Matrix4 VR::GetHeadTransform()
+	Matrix3x4 VR::GetHeadTransform()
 	{
 		if (m_rTrackedDevicePose[vr::k_unTrackedDeviceIndex_Hmd].bPoseIsValid)
 		{
-			return ConvertHmdMatrix34_tToMatrix4(m_rTrackedDevicePose[vr::k_unTrackedDeviceIndex_Hmd].mDeviceToAbsoluteTracking);
+			return Matrix3x4(ConvertHmdMatrix34_tToMatrix4(m_rTrackedDevicePose[vr::k_unTrackedDeviceIndex_Hmd].mDeviceToAbsoluteTracking));
 		}
-		return Matrix4();
+		return Matrix3x4();
 	}
 
-	Matrix4 VR::GetHandTransform(bool isRightHand)
+	Matrix3x4 VR::GetHandTransform(bool isRightHand)
 	{
 		uint32_t handIndex = (uint32_t)(m_pHMD->GetTrackedDeviceIndexForControllerRole(isRightHand ? vr::TrackedControllerRole_RightHand : vr::TrackedControllerRole_LeftHand));
 		if (handIndex < vr::k_unMaxTrackedDeviceCount && m_rTrackedDevicePose[handIndex].bPoseIsValid)
 		{
-			return ConvertHmdMatrix34_tToMatrix4(m_rTrackedDevicePose[handIndex].mDeviceToAbsoluteTracking);
+			return Matrix3x4(ConvertHmdMatrix34_tToMatrix4(m_rTrackedDevicePose[handIndex].mDeviceToAbsoluteTracking));
 		}
-		return Matrix4();
+		return Matrix3x4();
 	}
 
 	bool VR::GetControllerState(bool isRightHand, vr::VRControllerState_t *pControllerState, uint32_t unControllerStateSize)
@@ -230,6 +234,15 @@ namespace Urho3D {
 			vr::VR_Shutdown();
 			m_pHMD = NULL;
 		}
+	}
+
+	void VR::SetReferenceNode(Node* node)
+	{
+		referenceNode_ = node;
+
+		headNode_ = referenceNode_->CreateChild("Head Node");
+		leftHandNode_ = referenceNode_->CreateChild("Left Hand Node");
+		rightHandNode_ = referenceNode_->CreateChild("Right Hand Node");
 	}
 
 }

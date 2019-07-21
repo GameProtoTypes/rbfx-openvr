@@ -32,7 +32,8 @@ public:
 	static void RegisterObject(Context* context);
 
 	// Starts the VR subsystem
-	virtual void InitializeVR();
+	virtual void InitializeVR(Node* referenceNode);
+
 	// Handle update per visual frame
 	virtual void HandleUpdate(StringHash eventType, VariantMap& eventData);
 	// Get tracking data from OpenVR
@@ -48,16 +49,25 @@ public:
 	// Cleans up the VR subsystem
 	virtual void Stop();
 
-	/// Returns head transform
-	Matrix4 GetHeadTransform();
-	Matrix4 GetHandTransform(bool isRightHand);
+
+	//set the reference node all other nodes (including head node) are referencing from.
+	virtual void SetReferenceNode(Node* referenceNode);
+
+
+
 	virtual bool GetControllerState(bool isRightHand, vr::VRControllerState_t *pControllerState, uint32_t unControllerStateSize);
 	//virtual void TriggerHapticPulse(bool isRightHand, unsigned short duration);
 
 	void UpdateNodes();
 
+
+	Matrix3x4 GetHeadTransform();
+	Matrix3x4 GetHandTransform(bool isRightHand);
+
+
 	//pointer to the OpenVR API
 	vr::IVRSystem* m_pHMD;
+	WeakPtr<Node> referenceNode_;
 	SharedPtr<Node> headNode_;
 	SharedPtr<Camera> leftCamera_;
 	SharedPtr<Camera> rightCamera_;

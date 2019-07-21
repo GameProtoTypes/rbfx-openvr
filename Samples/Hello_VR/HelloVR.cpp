@@ -77,8 +77,17 @@ void HelloVR::CreateScene()
     // is also legal to place objects outside the volume but their visibility can then not be checked in a hierarchically
     // optimizing manner
     scene_->CreateComponent<Octree>();
+	
+	//Create a child scene node for reference for the VR subsystem.  Head node and Hand nodes will be children of this reference node.
+	playerNode_ = scene_->CreateChild("Player");
 
-    // Create a child scene node (at world origin) and a StaticModel component into it. Set the StaticModel to show a simple
+
+	
+	context_->RegisterSubsystem(new VR(context_));
+	VR* vr = context_->GetSubsystem<VR>();
+	vr->InitializeVR(playerNode_);
+	
+	// Create a child scene node (at world origin) and a StaticModel component into it. Set the StaticModel to show a simple
     // plane mesh with a "stone" material. Note that naming the scene nodes is optional. Scale the scene node larger
     // (100 x 100 world units)
     Node* planeNode = scene_->CreateChild("Plane");
@@ -113,24 +122,20 @@ void HelloVR::CreateScene()
         mushroomObject->SetMaterial(cache->GetResource<Material>("Materials/Mushroom.xml"));
     }
 
-	Node* headNode = scene_->CreateChild("Head");
-	Node* rightHand = scene_->CreateChild("Right Hand");
-	Node* leftHand = scene_->CreateChild("Left Hand");
+	Node* headNode = vr->headNode_->CreateChild("Head");
+	Node* rightHand = vr->rightHandNode_->CreateChild("Right Hand");
+	Node* leftHand = vr->leftHandNode_->CreateChild("Left Hand");
 
-	context_->RegisterSubsystem(new VR(context_));
-	VR* vr = context_->GetSubsystem<VR>();
-	vr->headNode_ = headNode;
-	vr->rightHandNode_ = rightHand;
-	vr->leftHandNode_ = leftHand;
-	vr->InitializeVR();
+	StaticModel* rightHandModel = rightHand->CreateComponent<StaticModel>();
+	rightHandModel->SetModel(cache->GetResource<Model>("Models/Mushroom.mdl"));
+	rightHandModel->SetMaterial(cache->GetResource<Material>("Materials/Mushroom.xml"));
+	
+	StaticModel* leftHandModel = leftHand->CreateComponent<StaticModel>();
+	leftHandModel->SetModel(cache->GetResource<Model>("Models/Mushroom.mdl"));
+	leftHandModel->SetMaterial(cache->GetResource<Material>("Materials/Mushroom.xml"));
+	rightHand->SetScale(0.1f);
+	leftHand->SetScale(0.1f);
 
-    // Create a scene node for the camera, which we will move around
-    // The camera will use default settings (1000 far clip distance, 45 degrees FOV, set aspect ratio automatically)
-    cameraNode_ = scene_->CreateChild("Camera");
-    cameraNode_->CreateComponent<Camera>();
-
-    // Set an initial position for the camera scene node above the plane
-    cameraNode_->SetPosition(Vector3(0.0f, 5.0f, 0.0f));
 }
 
 void HelloVR::CreateInstructions()
@@ -156,7 +161,7 @@ void HelloVR::SetupViewport()
     // Set up a viewport to the Renderer subsystem so that the 3D scene can be seen. We need to define the scene and the camera
     // at minimum. Additionally we could configure the viewport screen size and the rendering path (eg. forward / deferred) to
     // use, but now we just use full screen and default render path configured in the engine command line options
-    SharedPtr<Viewport> viewport(new Viewport(context_, scene_, cameraNode_->GetComponent<Camera>()));
+    SharedPtr<Viewport> viewport(new Viewport(context_, scene_, GetSubsystem<VR>()->leftCamera_));
     renderer->SetViewport(0, viewport);
 }
 
