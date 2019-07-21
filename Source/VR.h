@@ -54,6 +54,8 @@ public:
 	virtual bool GetControllerState(bool isRightHand, vr::VRControllerState_t *pControllerState, uint32_t unControllerStateSize);
 	//virtual void TriggerHapticPulse(bool isRightHand, unsigned short duration);
 
+	void UpdateNodes();
+
 	//pointer to the OpenVR API
 	vr::IVRSystem* m_pHMD;
 	SharedPtr<Node> headNode_;
