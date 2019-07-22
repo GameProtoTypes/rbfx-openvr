@@ -32,11 +32,15 @@ namespace Urho3D {
 		SubscribeToEvent(E_UPDATE, URHO3D_HANDLER(VR, HandleUpdate));
 		SubscribeToEvent(E_POSTRENDERUPDATE, URHO3D_HANDLER(VR, HandlePostRender));
 		m_pHMD = NULL;
+
+		
 	}
 
 	void VR::RegisterObject(Context* context)
 	{
+		context->RegisterSubsystem(new VR(context));
 
+		VRActionManifestFile::RegisterObject(context);
 	}
 
 	bool VR::InitializeVR(Node* referenceNode)
@@ -93,6 +97,7 @@ namespace Urho3D {
 		return true;
 	}
 
+
 	void VR::HandleUpdate(StringHash eventType, VariantMap& eventData)
 	{
 		if (m_pHMD) {
@@ -138,6 +143,7 @@ namespace Urho3D {
 			URHO3D_LOGERROR("RightEyeError");
 			URHO3D_LOGERROR(ea::to_string((unsigned)eError));
 		}
+		
 	}
 
 	void VR::FixedUpdate(float timeStep)
@@ -163,7 +169,7 @@ namespace Urho3D {
 		return Matrix3x4();
 	}
 
-	bool VR::GetControllerState(bool isRightHand, vr::VRControllerState_t *pControllerState, uint32_t unControllerStateSize)
+	bool VR::GetControllerState(bool isRightHand, vr::VRControllerState_t *pControllerState)
 	{
 		TrackedDeviceIndex_t handIndex = m_pHMD->GetTrackedDeviceIndexForControllerRole(isRightHand ? vr::TrackedControllerRole_RightHand : vr::TrackedControllerRole_LeftHand);
 		vr::VRControllerState_t state = vr::VRControllerState_t();
@@ -228,6 +234,12 @@ namespace Urho3D {
 		);
 	}
 
+	void VR::SetShowVisualControllers(bool enable)
+	{
+		leftHandNode_->GetComponent<StaticModel>()->SetEnabled(enable);
+		rightHandNode_->GetComponent<StaticModel>()->SetEnabled(enable);
+	}
+
 	void VR::Stop()
 	{
 		if (m_pHMD)
@@ -244,6 +256,19 @@ namespace Urho3D {
 		headNode_ = referenceNode_->CreateChild("Head Node");
 		leftHandNode_ = referenceNode_->CreateChild("Left Hand Node");
 		rightHandNode_ = referenceNode_->CreateChild("Right Hand Node");
+
+
+		StaticModel* leftHandstmdl = leftHandNode_->CreateComponent<StaticModel>();
+		StaticModel* rightHandstmdl = rightHandNode_->CreateComponent<StaticModel>();
+
+
+		leftHandstmdl->SetModel(GetSubsystem<ResourceCache>()->GetResource<Model>("Models/valve_index/valve_controller_knu_1_0_left/valve_controller_knu_1_0_left.mdl"));
+		leftHandstmdl->SetMaterial(GetSubsystem<ResourceCache>()->GetResource<Material>("Materials/valve/knuckles_left.xml"));
+
+		rightHandstmdl->SetModel(GetSubsystem<ResourceCache>()->GetResource<Model>("Models/valve_index/valve_controller_knu_1_0_right/valve_controller_knu_1_0_right.mdl"));
+		rightHandstmdl->SetMaterial(GetSubsystem<ResourceCache>()->GetResource<Material>("Materials/valve/knuckles_right.xml"));
+
+
 	}
 
 }

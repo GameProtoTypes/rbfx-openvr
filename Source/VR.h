@@ -34,6 +34,7 @@ public:
 	// Starts the VR subsystem
 	virtual bool InitializeVR(Node* referenceNode);
 
+
 	// Handle update per visual frame
 	virtual void HandleUpdate(StringHash eventType, VariantMap& eventData);
 	// Get tracking data from OpenVR
@@ -46,6 +47,11 @@ public:
 	virtual Matrix4 ConvertHmdMatrix34_tToMatrix4(const vr::HmdMatrix34_t &matPose);
 	// Converts a SteamVR matrix to urho3d matrix class
 	virtual Matrix4 ConvertHmdMatrix44_tToMatrix4(const vr::HmdMatrix44_t &matPose);
+	
+	virtual void SetShowVisualControllers(bool enable);
+	
+	
+	
 	// Cleans up the VR subsystem
 	virtual void Stop();
 
@@ -55,7 +61,7 @@ public:
 
 
 
-	virtual bool GetControllerState(bool isRightHand, vr::VRControllerState_t *pControllerState, uint32_t unControllerStateSize);
+	virtual bool GetControllerState(bool isRightHand, vr::VRControllerState_t *pControllerState);
 	//virtual void TriggerHapticPulse(bool isRightHand, unsigned short duration);
 
 	void UpdateNodes();
