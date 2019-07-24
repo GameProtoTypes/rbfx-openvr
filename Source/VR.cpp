@@ -40,7 +40,6 @@ namespace Urho3D {
 	{
 		context->RegisterSubsystem(new VR(context));
 
-		VRActionManifestFile::RegisterObject(context);
 	}
 
 	bool VR::InitializeVR(Node* referenceNode)
