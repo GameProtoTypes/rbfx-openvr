@@ -65,12 +65,7 @@ namespace Urho3D {
 
 		SetReferenceNode(referenceNode);
 
-		Node* leftCameraNode_ = headNode_->CreateChild("LeftCamera");
-		leftCamera_ = leftCameraNode_->CreateComponent<Camera>();
-		leftCamera_->SetFarClip(900.0f);
-		Node* rightCameraNode_ = headNode_->CreateChild("RightCamera");
-		rightCamera_ = rightCameraNode_->CreateComponent<Camera>();
-		rightCamera_->SetFarClip(900.0f);
+		
 
 		uint32_t m_nRenderWidth;
 		uint32_t m_nRenderHeight;
@@ -267,7 +262,12 @@ namespace Urho3D {
 		rightHandstmdl->SetModel(GetSubsystem<ResourceCache>()->GetResource<Model>("Models/valve_index/valve_controller_knu_1_0_right/valve_controller_knu_1_0_right.mdl"));
 		rightHandstmdl->SetMaterial(GetSubsystem<ResourceCache>()->GetResource<Material>("Materials/valve/knuckles_right.xml"));
 
-
+		Node* leftCameraNode_ = headNode_->CreateChild("LeftCamera");
+		leftCamera_ = leftCameraNode_->CreateComponent<Camera>();
+		leftCamera_->SetFarClip(900.0f);
+		Node* rightCameraNode_ = headNode_->CreateChild("RightCamera");
+		rightCamera_ = rightCameraNode_->CreateComponent<Camera>();
+		rightCamera_->SetFarClip(900.0f);
 	}
 
 }
