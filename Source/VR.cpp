@@ -70,6 +70,12 @@ namespace Urho3D {
 		uint32_t m_nRenderWidth;
 		uint32_t m_nRenderHeight;
 		m_pHMD->GetRecommendedRenderTargetSize(&m_nRenderWidth, &m_nRenderHeight);
+
+		m_nRenderWidth *= 2;
+		m_nRenderHeight *= 2;
+
+		URHO3D_LOGINFO("VR Render Target Size: " + ea::to_string(m_nRenderWidth) + "," + ea::to_string(m_nRenderHeight));
+
 		//the second rendertexture to have SetSize() called will have shadows...
 		leftRenderTexture = new Texture2D(context_);
 		leftRenderTexture->SetSize(m_nRenderWidth, m_nRenderHeight, Graphics::GetRGBFormat(), TEXTURE_RENDERTARGET);
