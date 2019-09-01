@@ -94,6 +94,8 @@ namespace Urho3D {
 
 		UpdateNodes();
 
+		isRunning_ = true;
+
 		return true;
 	}
 

@@ -34,6 +34,7 @@ public:
 	// Starts the VR subsystem
 	virtual bool InitializeVR(Node* referenceNode);
 
+	bool IsRunning() const { return isRunning_; }
 
 	// Handle update per visual frame
 	virtual void HandleUpdate(StringHash eventType, VariantMap& eventData);
@@ -70,6 +71,7 @@ public:
 	Matrix3x4 GetHeadTransform();
 	Matrix3x4 GetHandTransform(bool isRightHand);
 
+	bool isRunning_ = false;
 
 	//pointer to the OpenVR API
 	vr::IVRSystem* m_pHMD;
