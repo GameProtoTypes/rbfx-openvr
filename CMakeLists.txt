@@ -35,7 +35,7 @@ file(GLOB all_SRCS
         "${PROJECT_SOURCE_DIR}/Source/*.cpp"
         )
 
-add_library(rbfx-openvr SHARED ${all_SRCS})
+add_library(rbfx-openvr ${all_SRCS})
 target_compile_definitions(rbfx-openvr PRIVATE URHO_OPENVR_EXPORTS)
 target_include_directories(rbfx-openvr PUBLIC 
 Source
